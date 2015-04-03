@@ -1337,7 +1337,7 @@ class User
     public static function getFromHeader($usr_id)
     {
         $info = self::getNameEmail($usr_id);
-        return $info["usr_full_name"] . " <" . $info["usr_email"] . ">";
+        return '"' . $info["usr_full_name"] . '" <' . $info["usr_email"] . '>';
     }
 
 
