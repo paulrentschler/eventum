@@ -176,4 +176,19 @@ abstract class Abstract_Auth_Backend
     {
         return false;
     }
+
+    /**
+     * Returns true if an external authentication backend is being used.
+     *
+     * External authentication backends provide Eventum with an already
+     * authenticated username. This method is used to disable prompting for an
+     * email address and/or password as part of the logon process.
+     *
+     * @access  public
+     * @return  boolean
+     */
+    public function isExternalAuth()
+    {
+        return false;
+    }
 }

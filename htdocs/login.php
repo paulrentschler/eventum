@@ -29,6 +29,12 @@
 
 require_once dirname(__FILE__) . '/../init.php';
 
+// handle external authentication
+if (Auth::isExternal() && isset($_SERVER['REMOTE_USER'])) {
+    $_POST['email'] = $_SERVER['REMOTE_USER'].APP_AUTH_REMOTE_USER_SUFFIX;
+    $_POST['passwd'] = 'external-auth';
+}
+
 if (Validation::isWhitespace($_POST["email"])) {
     Auth::redirect("index.php?err=1");
 }

@@ -3,9 +3,7 @@
 // +----------------------------------------------------------------------+
 // | Eventum - Issue Tracking System                                      |
 // +----------------------------------------------------------------------+
-// | Copyright (c) 2003 - 2008 MySQL AB                                   |
-// | Copyright (c) 2008 - 2010 Sun Microsystem Inc.                       |
-// | Copyright (c) 2011 - 2013 Eventum Team.                              |
+// | Copyright (c) 2012 - 2013 Eventum Team.                              |
 // |                                                                      |
 // | This program is free software; you can redistribute it and/or modify |
 // | it under the terms of the GNU General Public License as published by |
@@ -24,55 +22,47 @@
 // | 59 Temple Place - Suite 330                                          |
 // | Boston, MA 02111-1307, USA.                                          |
 // +----------------------------------------------------------------------+
-// | Authors: João Prado Maia <jpm@mysql.com>                             |
+// | Authors: Paul Rentschler <paul@rentschler.ws>                        |
 // +----------------------------------------------------------------------+
 
-require_once dirname(__FILE__) . '/../init.php';
-
-// check if templates_c is writable by the web server user
-if (!Misc::isWritableDirectory(APP_TPL_COMPILE_PATH)) {
-    $errors = array("Directory '" . APP_TPL_COMPILE_PATH . "' is not writable.");
-    Misc::displayRequirementErrors($errors);
-    exit;
-}
-
-$tpl = new Template_Helper();
-$tpl->setTemplate("index.tpl.html");
-
-// log anonymous users out so they can use the login form
-if (Auth::hasValidCookie(APP_COOKIE) && Auth::isAnonUser()) {
-    Auth::logout();
-}
-
-if (Auth::hasValidCookie(APP_COOKIE) && !Auth::isAnonUser()) {
-    $cookie = Auth::getCookieInfo(APP_COOKIE);
-    if (!empty($_REQUEST["url"])) {
-        $extra = '?url=' . $_REQUEST["url"];
-    } else {
-        $extra = '';
-    }
-    Auth::redirect("select_project.php" . $extra);
-}
-
-$projects = Project::getAnonymousList();
-if (empty($projects)) {
-    $tpl->assign("anonymous_post", 0);
-} else {
-    $tpl->assign("anonymous_post", 1);
-}
-
-// skip the login form if we are using external authentication
-if (!Auth::isExternal()) {
-    $tpl->assign("external_auth", 0);
-} else {
-    $tpl->assign("external_auth", 1);
-    if (!isset($_GET['err'])) {
-        if (!empty($_REQUEST["url"])) {
-            $extra = '?url=' . $_REQUEST["url"];
+/**
+ * This auth backend trusts the web server (i.e., Apache) to set the REMOTE_USER
+ * variable that provides the username of an already authenticated user that
+ * should be trusted by Eventum.
+ *
+ * This backend will look for users in the default mysql backend and only allow
+ * the user to proceed if a matching username is found.
+ *
+ * Set define('APP_AUTH_BACKEND', 'external_auth_backend') in the config file
+ *
+ * Set define('APP_AUTH_REMOTE_USER_SUFFIX', '@domain.tld') in the config file
+ * to append something to the end of the REMOTE_USER variable before looking up
+ * the user account by email address. If REMOTE_USER contains a valid email
+ * address, APP_AUTH_REMOTE_USER_SUFFIX can remain blank which is the default
+ * value.
+ */
+class External_Auth_Backend extends Mysql_Auth_Backend
+{
+    public function verifyPassword($login, $password)
+    {
+        $usr_id = User::getUserIDByEmail($login, true);
+        $user = User::getDetails($usr_id);
+        if ($user['usr_id'] > 0) {
+            self::resetFailedLogins($usr_id);
+            return true;
         } else {
-            $extra = '';
+            self::incrementFailedLogins($usr_id);
+            return false;
         }
-        Auth::redirect("login.php" . $extra);
+    }
+
+    public function canUserUpdatePassword($usr_id)
+    {
+        return false;
+    }
+
+    public function isExternalAuth()
+    {
+        return true;
     }
 }
-$tpl->displayTemplate();
