@@ -50,11 +50,19 @@ function validateForm(f)
             {elseif $smarty.get.err == 2}
               {t}Error{/t}: {t}Please provide your password.{/t}
             {elseif $smarty.get.err == 3 or $smarty.get.err == 4}
-              {t}Error{/t}: {t}The email address / password combination could not be found in the system.{/t}
+              {if $external_auth == 1}
+                {t}Error{/t}: {t}Your account could not be found in the system.{/t}
+              {else}
+                {t}Error{/t}: {t}The email address / password combination could not be found in the system.{/t}
+              {/if}
             {elseif $smarty.get.err == 5}
               {t}Your session has expired. Please login again to continue.{/t}
             {elseif $smarty.get.err == 6}
-              {t 1=$application_title}Thank you, you are now logged out of %1{/t}.
+              {if $external_auth == 1}
+                {t 1=$application_title}Thank you, close your browser to fully log out of %1{/t}.
+              {else}
+                {t 1=$application_title}Thank you, you are now logged out of %1{/t}.
+              {/if}
             {elseif $smarty.get.err == 7}
               {t}Error{/t}: {t}Your user status is currently set as inactive. Please contact your local system administrator for further information.{/t}
             {elseif $smarty.get.err == 8}
@@ -72,6 +80,7 @@ function validateForm(f)
           </td>
         </tr>
         {/if}
+        {if $external_auth != 1}
         <tr>
           <td align="right" width="40%" class="default_white" bgcolor="#006486"><b>{t}Email Address{/t}:</b></td>
           <td width="60%" bgcolor="#006486">
@@ -107,6 +116,7 @@ function validateForm(f)
             {if $app_setup.open_signup == 'enabled'}<a class="white_link" href="signup.php">{t}Signup for an Account{/t}</a>{/if}
           </td>
         </tr>
+        {/if}
         <tr>
           <td bgcolor="#006486" colspan="2" align="center" class="default_white">
             <b>* {t}Requires support for cookies and javascript in your browser{/t}</b>

@@ -141,6 +141,9 @@ if (!defined('APP_FULLTEXT_SEARCH_CLASS')) {
 if (!defined('APP_AUTH_BACKEND')) {
     define('APP_AUTH_BACKEND', 'mysql_auth_backend');
 }
+if (!defined('APP_AUTH_REMOTE_USER_SUFFIX')) {
+    define('APP_AUTH_REMOTE_USER_SUFFIX', '');
+}
 
 if (!defined('APP_DEFAULT_ASSIGNED_EMAILS')) {
     define('APP_DEFAULT_ASSIGNED_EMAILS', 1);

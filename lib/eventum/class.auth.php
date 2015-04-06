@@ -444,6 +444,17 @@ class Auth
     }
 
     /**
+     * Returns true if an external authentication backend is being used.
+     *
+     * @access  public
+     * @return  boolean
+     */
+    public static function isExternal()
+    {
+        return self::getAuthBackend()->isExternalAuth();
+    }
+
+    /**
      * Gets the current user ID.
      *
      * @return  integer The ID of the user
