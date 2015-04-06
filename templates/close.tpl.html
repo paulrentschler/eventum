@@ -128,6 +128,9 @@ function toggleNotificationList()
         $("input[name='time_spent']").val("");
         $("select[name='category']").val("");
         $(".not-used").hide();
+    } else {
+        $(cell).parent().show();
+        $(".not-used").show();
     }
 }
 
