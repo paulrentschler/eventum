@@ -240,13 +240,27 @@ class Authorized_Replier
         // first check if this is an actual user or just an email address
         $usr_id = User::getUserIDByEmail($email, true);
         if (!empty($usr_id)) {
+            /**
+             * CUSTOMIZED: Educational Equity doesn't care if the current user
+             *             is on the authorized replier list or is in any way
+             *             associated with the issue. If the user has an Eventum
+             *             account, they are allowed to send email.
+             *
+             * @author  Paul Rentschler <par117@psu.edu>
+             * @since   2014-05-19
+             */
+            return true;
+
+            /*** Original code for this function is below:
             // real user, get id
             $is_usr_authorized = self::isUserAuthorizedReplier($issue_id, $usr_id);
             if ($is_usr_authorized) {
                 return true;
             }
-            // if user is not authorized by user ID, continue to check by email in case the user account was added
-            // after the email address was added to authorized repliers list.
+            ***/
+            // if user is not authorized by user ID, continue to check by email
+            // in case the user account was added after the email address was
+            // added to authorized repliers list.
         }
         // not a real user
         $stmt = "SELECT
