@@ -1895,7 +1895,7 @@ class Support
             return true;
         }
 
-        /*** Original code for this funciton is below:
+        /*** Original code for this function is below:
         $prj_id = Issue::getProjectID($issue_id);
 
         // check the workflow
