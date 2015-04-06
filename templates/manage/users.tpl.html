@@ -18,17 +18,19 @@
                       selectField(f, 'email');
                       return false;
                   }
-                  if (f.cat.value == 'update') {
-                      if ((!isWhitespace(f.password.value)) && (f.password.value.length < 6)) {
-                          alert('{/literal}{t escape=js}Please enter a password of at least 6 characters.{/t}{literal}');
-                          selectField(f, 'password');
-                          return false;
-                      }
-                  } else {
-                      if ((isWhitespace(f.password.value)) || (f.password.value.length < 6)) {
-                          alert('{/literal}{t escape=js}Please enter a password of at least 6 characters.{/t}{literal}');
-                          selectField(f, 'password');
-                          return false;
+                  if typeof(f.password) !== 'undefined') {
+                      if (f.cat.value == 'update') {
+                          if ((!isWhitespace(f.password.value)) && (f.password.value.length < 6)) {
+                              alert('{/literal}{t escape=js}Please enter a password of at least 6 characters.{/t}{literal}');
+                              selectField(f, 'password');
+                              return false;
+                          }
+                      } else {
+                          if ((isWhitespace(f.password.value)) || (f.password.value.length < 6)) {
+                              alert('{/literal}{t escape=js}Please enter a password of at least 6 characters.{/t}{literal}');
+                              selectField(f, 'password');
+                              return false;
+                          }
                       }
                   }
                   if (isWhitespace(f.full_name.value)) {
@@ -105,11 +107,15 @@
                   <b>{t}Password{/t}:</b>
                 </td>
                 <td bgcolor="{$light_color}">
-                  <input type="password" name="password" size="20" class="default" autocomplete="off">
-                  {if $smarty.get.cat == 'edit'}
-                  <span class="default">({t}leave empty to keep the current password{/t})</span>
+                  {if $external_auth == 1}
+                    External authentication in use
+                  {else}
+                    <input type="password" name="password" size="20" class="default" autocomplete="off">
+                    {if $smarty.get.cat == 'edit'}
+                    <span class="default">({t}leave empty to keep the current password{/t})</span>
+                    {/if}
+                    {include file="error_icon.tpl.html" field="password"}
                   {/if}
-                  {include file="error_icon.tpl.html" field="password"}
                 </td>
               </tr>
               <tr>

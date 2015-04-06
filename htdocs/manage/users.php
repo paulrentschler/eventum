@@ -35,6 +35,10 @@ $tpl->setTemplate("manage/index.tpl.html");
 Auth::checkAuthentication(APP_COOKIE);
 
 $tpl->assign("type", "users");
+$tpl->assign("external_auth", 0);
+if (Auth::isExternal()) {
+    $tpl->assign("external_auth", 1);
+}
 
 $role_id = Auth::getCurrentRole();
 if (($role_id == User::getRoleID('administrator')) || ($role_id == User::getRoleID('manager'))) {
