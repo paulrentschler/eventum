@@ -1879,6 +1879,23 @@ class Support
      */
     function isAllowedToEmail($issue_id, $sender_email)
     {
+        /**
+         * CUSTOMIZED: Educational Equity doesn't care if the current user
+         *             is on the authorized replier list or is in any way
+         *             associated with the issue. If the user has an Eventum
+         *             account, they are allowed to send email.
+         *
+         * @author  Paul Rentschler <par117@psu.edu>
+         * @since   2014-05-27
+         */
+        $sender_usr_id = User::getUserIDByEmail($sender_email, true);
+        if (empty($sender_usr_id)) {
+            return false;
+        } else {
+            return true;
+        }
+
+        /*** Original code for this function is below:
         $prj_id = Issue::getProjectID($issue_id);
 
         // check the workflow
@@ -1924,6 +1941,7 @@ class Support
             }
         }
         return $is_allowed;
+        ***/
     }
 
 

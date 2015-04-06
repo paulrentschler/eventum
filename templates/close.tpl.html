@@ -59,9 +59,17 @@ function validateForm(f)
     if (getSelectedOption(f, 'status') == -1) {
         errors[errors.length] = new Option('{/literal}{t escape=js}Status{/t}{literal}', 'status');
     }
+    /**
+     * CUSTOMIZED: Educational Equity does not require a reason to close the issue.
+     *
+     * @author  Paul Rentschler <par117@psu.edu>
+     * @since   2013-11-04
+     */
+    /*** Disabling the required reason check
     if (isWhitespace(f.reason.value)) {
         errors[errors.length] = new Option('{/literal}{t escape=js}Reason to close{/t}{literal}', 'reason');
     }
+    ***/
 
     if (!isWhitespace(f.time_spent.value)) {
         if (!isNumberOnly(f.time_spent.value)) {
@@ -102,6 +110,28 @@ function toggleNotificationList()
     } else {
         cell.style.background = "{/literal}{$internal_color}{literal}";
     }
+
+    /**
+     * CUSTOMIZED: Educational Equity wants the option to not notify anyone
+     *             when an issue is closed.
+     *
+     * If the "none" option is selected on the notification list, the reason
+     * and the time-related fields are hidden, otherwise everything is shown.
+     *
+     * @author  Paul Rentschler <par117@psu.edu>
+     * @since   2013-11-04
+     */
+    if (f.notification_list[2].checked) {
+        $("textarea[name='reason']").val("");
+        $(cell).parent().hide();
+
+        $("input[name='time_spent']").val("");
+        $("select[name='category']").val("");
+        $(".not-used").hide();
+    } else {
+        $(cell).parent().show();
+        $(".not-used").show();
+    }
 }
 
 var old_reason = '';
@@ -118,6 +148,20 @@ function setSignature(f)
         f.reason.value = old_reason;
     }
 }
+
+/**
+ * CUSTOMIZED: Educational Equity wants the option to not notify anyone
+ *             when an issue is closed.
+ *
+ * Need to call the toggleNotificationList() function on page load to customize
+ * the page without the extra fields.
+ *
+ * @author  Paul Rentschler <par117@psu.edu>
+ * @since   2013-11-04
+ */
+$(document).ready(function () {
+    toggleNotificationList();
+});
 
 //-->
 </script>
@@ -167,9 +211,9 @@ function setSignature(f)
             <b>{t}Send Notification About Issue Being Closed?{/t}</b><br />
           </td>
           <td bgcolor="{$light_color}" class="default">
-            <input type="radio" name="send_notification" checked value="1">
+            <input type="radio" name="send_notification" value="1">
             <a id="link" class="link" href="javascript:void(null);" onClick="checkRadio('close_form', 'send_notification', 0);">{t}Yes{/t}</a>&nbsp;&nbsp;
-            <input type="radio" name="send_notification" value="0">
+            <input type="radio" name="send_notification" checked value="0">
             <a id="link" class="link" href="javascript:void(null);" onClick="checkRadio('close_form', 'send_notification', 1);">{t}No{/t}</a>
           </td>
         </tr>
@@ -178,15 +222,17 @@ function setSignature(f)
             <b>{t}Send Notification To{/t}:</b><br />
           </td>
           <td bgcolor="{$light_color}" class="default">
-            <input id="notification_internal" type="radio" name="notification_list" checked value="internal" onchange="toggleNotificationList()">
+            <input id="notification_internal" type="radio" name="notification_list" value="internal" onchange="toggleNotificationList()">
             <label for="notification_internal">{t}Internal Users{/t} ({$notification_list_internal|default:"<i>None</i>"}) ({t}Will save as a note{/t})</label><br />
             <input id="notification_all" type="radio" name="notification_list" value="all" onchange="toggleNotificationList()">
-            <label for="notification_all">{t}All{/t} ({$notification_list_all|default:"<i>None</i>"}) ({t}Will save as email{/t})</label>
+            <label for="notification_all">{t}All{/t} ({$notification_list_all|default:"<i>None</i>"}) ({t}Will save as email{/t})</label><br />
+            <input id="notification_none" type="radio" name="notification_list" checked value="none" onchange="toggleNotificationList()">
+            <label for="notification_none">No one (No email or note saved)</label>
           </td>
         </tr>
         <tr>
           <td width="160" bgcolor="{$internal_color}" class="default_white" id="reason_cell">
-            <b>{t}Reason for closing issue{/t}: *</b><br />
+            <b>{t}Reason for closing issue{/t}: </b><br />
           </td>
           <td bgcolor="{$light_color}" class="default">
             <textarea name="reason" rows="8" style="width: 97%">{if $current_user_prefs.auto_append_email_sig == 1}
@@ -213,7 +259,7 @@ function setSignature(f)
           </td>
         </tr>
         {/if}
-        <tr>
+        <tr class="not-used">
           <td width="160" bgcolor="{$internal_color}" class="default_white">
             <b>{t}Time Spent{/t}: </b><br />
           </td>
@@ -221,7 +267,7 @@ function setSignature(f)
             <input class="default" type="text" size="5" name="time_spent" class="default"> <span class="default">{t}(in minutes){/t}</span>{include file="error_icon.tpl.html" field="time_spent"}
           </td>
         </tr>
-        <tr>
+        <tr class="not-used">
           <td width="160" bgcolor="{$internal_color}" class="default_white">
             <b>{t}Time Category{/t}: </b><br />
           </td>

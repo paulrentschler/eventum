@@ -1380,7 +1380,17 @@ class Issue
         // record the change
         History::add($issue_id, $usr_id, History::getTypeID('issue_closed'), "Issue updated to status '" . Status::getStatusTitle($status_id) . "' by " . User::getFullName($usr_id));
 
-        if ($send_notification_to == 'all') {
+        /**
+         * CUSTOMIZED: Educational Equity wants the option to not notify anyone
+         *             when an issue is closed.
+         *
+         * @author  Paul Rentschler <par117@psu.edu>
+         * @since   2013-11-04
+         */
+        if ($send_notification_to == 'none') {
+            // do nothing; no email or internal note should be created
+
+        } elseif ($send_notification_to == 'all') {
 
             $from = User::getFromHeader($usr_id);
             $message_id = User::getFromHeader($usr_id);
@@ -2910,7 +2920,15 @@ class Issue
                 }
                 $res["associated_issues_details"] = self::getAssociatedIssuesDetails($res["iss_id"]);
                 $res["associated_issues"] = self::getAssociatedIssues($res["iss_id"]);
-                $res["reporter"] = User::getFullName($res["iss_usr_id"]);
+                /**
+                 * CUSTOMIZED: Educational Equity would like to see the reporter's
+                 *             email address along their name.
+                 *
+                 * @author  Paul Rentschler <par117@psu.edu>
+                 * @since   2014-06-02
+                 */
+                $res["reporter"] = User::getFullName($res["iss_usr_id"])
+                    . ' (' . User::getEmail($res['iss_usr_id']) . ')';
                 if (empty($res["iss_updated_date"])) {
                     $res["iss_updated_date"] = 'not updated yet';
                 } else {
