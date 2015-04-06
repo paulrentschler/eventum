@@ -1413,29 +1413,32 @@ class Notification
      */
     function notifyUserPassword($usr_id, $password)
     {
-        $info = User::getDetails($usr_id);
-        $info["usr_password"] = $password;
-        $info["projects"] = Project::getAssocList($usr_id, true, true);
-        // open text template
-        $tpl = new Template_Helper();
-        $tpl->setTemplate('notifications/updated_password.tpl.text');
-        $tpl->bulkAssign(array(
-            "app_title"    => Misc::getToolCaption(),
-            "user"         => $info
-        ));
+        // if an external authentication backend is used, don't send the notification
+        if (!Auth::isExternal()) {
+            $info = User::getDetails($usr_id);
+            $info["usr_password"] = $password;
+            $info["projects"] = Project::getAssocList($usr_id, true, true);
+            // open text template
+            $tpl = new Template_Helper();
+            $tpl->setTemplate('notifications/updated_password.tpl.text');
+            $tpl->bulkAssign(array(
+                "app_title"    => Misc::getToolCaption(),
+                "user"         => $info
+            ));
 
-        // change the current locale
-        Language::set(User::getLang($usr_id));
+            // change the current locale
+            Language::set(User::getLang($usr_id));
 
-        $text_message = $tpl->getTemplateContents();
+            $text_message = $tpl->getTemplateContents();
 
-        // send email (use PEAR's classes)
-        $mail = new Mail_Helper;
-        $mail->setTextBody($text_message);
-        $setup = $mail->getSMTPSettings();
-        $mail->send($setup["from"], $mail->getFormattedName($info["usr_full_name"], $info["usr_email"]), APP_SHORT_NAME . ": " . ev_gettext("User account password changed"));
+            // send email (use PEAR's classes)
+            $mail = new Mail_Helper;
+            $mail->setTextBody($text_message);
+            $setup = $mail->getSMTPSettings();
+            $mail->send($setup["from"], $mail->getFormattedName($info["usr_full_name"], $info["usr_email"]), APP_SHORT_NAME . ": " . ev_gettext("User account password changed"));
 
-        Language::restore();
+            Language::restore();
+        }
     }
 
 
