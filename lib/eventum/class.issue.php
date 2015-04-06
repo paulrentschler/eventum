@@ -2910,7 +2910,15 @@ class Issue
                 }
                 $res["associated_issues_details"] = self::getAssociatedIssuesDetails($res["iss_id"]);
                 $res["associated_issues"] = self::getAssociatedIssues($res["iss_id"]);
-                $res["reporter"] = User::getFullName($res["iss_usr_id"]);
+                /**
+                 * CUSTOMIZED: Educational Equity would like to see the reporter's
+                 *             email address along their name.
+                 *
+                 * @author  Paul Rentschler <par117@psu.edu>
+                 * @since   2014-06-02
+                 */
+                $res["reporter"] = User::getFullName($res["iss_usr_id"])
+                    . ' (' . User::getEmail($res['iss_usr_id']) . ')';
                 if (empty($res["iss_updated_date"])) {
                     $res["iss_updated_date"] = 'not updated yet';
                 } else {
