@@ -2057,7 +2057,8 @@ class Support
         if (empty($cc)) {
             return array();
         } else {
-            $cc = str_replace(",", ";", $cc);
+            // RegEx courtesy of: http://stackoverflow.com/a/21106122/645638
+            $cc = preg_replace('/(?!\B"[^"]*),(?![^"]*"\B)/i', ';', $cc);
             return explode(";", $cc);
         }
     }
