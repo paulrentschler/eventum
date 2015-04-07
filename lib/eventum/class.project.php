@@ -805,7 +805,7 @@ class Project
         } else {
             $temp = array();
             foreach ($res as $name => $email) {
-                $temp['"$name" <$email>'] = $name;
+                $temp['"'.$name.'" <'.$email.'>'] = $name;
             }
             $returns[$key] = $temp;
             return $temp;
