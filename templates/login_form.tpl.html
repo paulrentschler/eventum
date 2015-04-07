@@ -56,7 +56,11 @@ function validateForm(f)
                 {t}Error{/t}: {t}The email address / password combination could not be found in the system.{/t}
               {/if}
             {elseif $smarty.get.err == 5}
-              {t}Your session has expired. Please login again to continue.{/t}
+              {if $external_auth == 1}
+                Your session has expired. Please <a href="{$app_base_url}" class="link">try again</a> to continue.
+              {else}
+                {t}Your session has expired. Please login again to continue.{/t}
+              {/if}
             {elseif $smarty.get.err == 6}
               {if $external_auth == 1}
                 {t 1=$application_title}Thank you, close your browser to fully log out of %1{/t}.
