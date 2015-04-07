@@ -2141,9 +2141,10 @@ class Support
                 $recipients = array($_POST['to']);
                 $recipients = array_merge($recipients, self::getRecipientsCC($_POST['cc']));
                 for ($i = 0; $i < count($recipients); $i++) {
-                    if ((!empty($recipients[$i])) && (!Notification::isIssueRoutingSender($_POST["issue_id"], $recipients[$i]))) {
-                        Notification::subscribeEmail(Auth::getUserID(), $_POST["issue_id"], Mail_Helper::getEmailAddress($recipients[$i]),
-                                        Notification::getDefaultActions($_POST['issue_id'], $recipients[$i], 'add_unknown_user'));
+                    $recipient = trim($recipients[$i]);
+                    if ((!empty($recipient)) && (!Notification::isIssueRoutingSender($_POST["issue_id"], $recipient))) {
+                        Notification::subscribeEmail(Auth::getUserID(), $_POST["issue_id"], Mail_Helper::getEmailAddress($recipient),
+                                        Notification::getDefaultActions($_POST['issue_id'], $recipient, 'add_unknown_user'));
                     }
                 }
             }
@@ -2168,8 +2169,9 @@ class Support
                 }
                 $unknowns = array();
                 for ($i = 0; $i < count($recipients); $i++) {
-                    if (!Notification::isSubscribedToEmails($_POST['issue_id'], $recipients[$i])) {
-                        $unknowns[] = $recipients[$i];
+                    $recipient = trim($recipients[$i]);
+                    if (!Notification::isSubscribedToEmails($_POST['issue_id'], $recipient)) {
+                        $unknowns[] = $recipient;
                     }
                 }
                 if (count($unknowns) > 0) {
