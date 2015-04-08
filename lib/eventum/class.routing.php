@@ -144,7 +144,7 @@ class Routing
 
         // remove certain CC addresses
         if ((!empty($structure->headers['cc'])) && (@$setup['smtp']['save_outgoing_email'] == 'yes')) {
-            $ccs = explode(",", @$structure->headers['cc']);
+            $ccs = Support::getRecipientsCC(@$structure->headers['cc']);
             for ($i = 0; $i < count($ccs); $i++) {
                 if (Mail_Helper::getEmailAddress($ccs[$i]) == $setup['smtp']['save_address']) {
                     unset($ccs[$i]);
