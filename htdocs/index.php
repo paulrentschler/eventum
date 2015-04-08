@@ -66,7 +66,7 @@ if (!Auth::isExternal()) {
     $tpl->assign("external_auth", 0);
 } else {
     $tpl->assign("external_auth", 1);
-    if (!isset($_GET['err'])) {
+    if (empty($_GET['err']) || (!empty($_GET['err']) && $_GET['err'] == 5)) {
         if (!empty($_REQUEST["url"])) {
             $extra = '?url=' . $_REQUEST["url"];
         } else {
